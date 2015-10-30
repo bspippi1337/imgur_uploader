@@ -12,19 +12,55 @@
 
 <div class="container">
     <h1>Simple IMGUR Uploader</h1>
-    <h5>Built by <a href="http://josetomastocino.com">JoséTomásTocino</a></h5>
+    <h5>Built by <a href="http://josetomastocino.com">JoséTomásTocino</a> - <a href="https://github.com/JoseTomasTocino/imgur_uploader">Get the code</a></h5>
     <p>Did you realize that IMGUR has removed the <em>Generate multiple links</em> feature from their upload
     page? It's a pity, it was really useful for embedding galleries in forums and other websites.</p>
 
     <p>But cry no more, as this small website will allow you to upload several images and generate links
-    for all of them for Markdown texts.</p>
+    for all of them.</p>
 
     {% if links %}
-        <strong>Links:</strong>
         <div class="row">
-<pre><code>{% for link in links %}![Image]({{ link }})
-{% endfor %}</code></pre>
+            <div class="four columns">
+                <label for="link-format">Link format:</label>
+                <select name="link-format" id="link-format" class="u-full-width">
+                    <option value="markdown">Markdown</option>
+                    <option value="html">HTML</option>
+                    <option value="bbcode">BBCode</option>
+                </select>
+            </div>
+            <div class="eight columns">
+                <strong>Links:</strong>
+                <pre><code id="link-output"></code></pre>
+            </div>
         </div>
+
+        <script>
+            var links = new Array;
+            {% for link in links %}links.push('{{ link }}');
+{% endfor %}
+
+            var linkFormats = {
+                'bbcode': '[IMG]{link}[/IMG]',
+                'html': '<a href="{link}">Image</a>',
+                'markdown': '![Image]({link})'
+            };
+
+            function buildLinks()
+            {
+                var linkFormat = linkFormats[document.getElementById("link-format").value];
+                var linkOutput = document.getElementById("link-output");
+                linkOutput.innerText = "";
+
+                links.forEach(function(e){
+                    linkOutput.innerText += linkFormat.replace("{link}", e);
+                    linkOutput.innerHTML += "<br>";
+                });
+            }
+
+            document.getElementById("link-format").addEventListener("change", buildLinks);
+            buildLinks();
+        </script>
     {% endif %}
 
 
