@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <title>IMGUR UPLOAD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>Simple IMGUR Uploader</h1>
+    <h5>Built by <a href="http://josetomastocino.com">JoséTomásTocino</a></h5>
+    <p>Did you realize that IMGUR has removed the <em>Generate multiple links</em> feature from their upload
+    page? It's a pity, it was really useful for embedding galleries in forums and other websites.</p>
+
+    <p>But cry no more, as this small website will allow you to upload several images and generate links
+    for all of them for Markdown texts.</p>
+
+    {% if links %}
+        <strong>Links:</strong>
+        <div class="row">
+<pre><code>{% for link in links %}![Image]({{ link }})
+{% endfor %}</code></pre>
+        </div>
+    {% endif %}
+
+
+    <div class="row">
+        <form action="" method="POST" enctype="multipart/form-data">
+            <label for="files">Images to upload:</label>
+            <input type="file" name="files" multiple>
+            <input type="submit" class="button-primary" value="Upload that shit">
+        </form>
+    </div>
+
+</div>
+
+
+</body>
+</html>
