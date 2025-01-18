@@ -1,0 +1,125 @@
+<!>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>IMGUR UPLOAD</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href='//fonts.googleapis.com/css?family=Raleway:400,300,600' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.min.css">
+
+</head>
+<body>
+
+<div class="container">
+    <h1>Simple IMGUR Uploader</h1>
+    <h5>Built by <a href="http://josetomastocino.com">JoséTomásTocino</a> - <a
+            href="https://github.com/JoseTomasTocino/imgur_uploader">Get the code</a></h5>
+
+    <p>Did you realize that IMGUR has removed the <em>Generate multiple links</em> feature from their upload
+        page? It's a pity, it was really useful for embedding galleries in forums and other websites.</p>
+
+    <p>But cry no more, as this small website will allow you to upload several images and generate links
+        for all of them.</p>
+
+
+    <div class="row">
+        <form action="" id="mainForm" method="POST" enctype="multipart/form-data">
+            <label for="files">Images to upload:</label>
+            <input type="file" name="files" id="inputFiles" multiple>
+
+            <button class="button-primary" type="submit" id="btnUpload">Upload that shit</button>
+        </form>
+    </div>
+
+    <div class="row" id="linkOutput" style="display: none">
+        <div class="four columns">
+            <label for="link-format">Link format:</label>
+            <select name="link-format" id="link-format" class="u-full-width">
+                <option value="markdown">Markdown</option>
+                <option value="html">HTML</option>
+                <option value="bbcode">BBCode</option>
+            </select>
+        </div>
+        <div class="eight columns">
+            <strong>Links:</strong>
+            <pre><code id="link-output"></code></pre>
+        </div>
+    </div>
+
+    <script>
+
+    </script>
+
+
+</div>
+
+<script>
+    var links = new Array();
+    var totalFiles, processedFiles;
+
+    var linkFormats = {
+        'bbcode': '[IMG]{link}[/IMG]',
+        'html': '<img src="{link}">',
+        'markdown': '![Image]({link})'
+    };
+
+    function buildLinks() {
+        var linkFormat = linkFormats[document.getElementById("link-format").value];
+        var linkOutput = document.getElementById("link-output");
+        linkOutput.innerText = "";
+
+        links.forEach(function (e) {
+            linkOutput.innerText += linkFormat.replace("{link}", e);
+            linkOutput.innerHTML += "<br>";
+        });
+    }
+
+    document.getElementById("link-format").addEventListener("change", buildLinks);
+
+    function updateUploadButtonText ()
+    {
+        document.getElementById("btnUpload").innerText = "Uploading (" + processedFiles + "/" + totalFiles + ")";
+    }
+
+    document.getElementById("mainForm").addEventListener("submit", function (e)
+    {
+        var files = document.getElementById("inputFiles").files;
+        totalFiles = files.length;
+        processedFiles = 0;
+        updateUploadButtonText();
+
+        // For each file, build a FormData and send an AJAX request
+        for (var i = 0; i < files.length; ++i)
+        {
+            var formData = new FormData();
+            formData.append("file", files[i]);
+
+            var request = new XMLHttpRequest();
+            request.open("POST", "/", true);
+            request.onload = function (oe)
+            {
+                console.log("READY", this);
+                if (this.readyState == 4 && this.status == 200) {
+                    processedFiles ++;
+                    updateUploadButtonText();
+                    document.getElementById("linkOutput").style.display = "block";
+                    var result = JSON.parse(this.responseText);
+                    links.push(result['link']);
+                    buildLinks();
+
+                }
+            }
+
+            request.send(formData);
+        }
+
+        e.preventDefault();
+    });
+
+</script>
+
+
+</body>
+</html>
